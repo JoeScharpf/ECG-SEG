@@ -1,6 +1,8 @@
 # Phase 1: Supervised Baseline on gpu2
 
-Run a supervised ResNet-18 baseline on LUDB (1/16 labels). Outputs go to `baseline/exps/`.
+Run the official SemiSegECG supervised baseline: **ResNet-18 + FCN**, trained from scratch on LUDB with 1/16 labels (`configs/base/resnet18/scratch.yaml`). Only the labeled train split is used; unlabeled data is for Phase 2 SSL methods.
+
+Outputs go to `baseline/exps/`.
 
 ## Prerequisites
 
@@ -50,7 +52,9 @@ Check `baseline/exps/resnet18/scratch/ludb/1over16/`:
 |------|-------------|
 | `best-MeanIoU.pth` | Best validation checkpoint |
 | `log.txt` | Per-epoch JSON metrics |
-| `test_metrics.csv` | Test set metrics |
+| `test_metrics.csv` | Test set metrics (quick summary) |
+| `test_outputs.npy` | Per-sample predictions (for paper-style eval) |
+| `test_labels.npy` | Ground-truth labels (for paper-style eval) |
 | `training_curves.png` | Loss and mIoU charts |
 
 Re-run plots only:
@@ -68,6 +72,10 @@ tensorboard --logdir baseline/exps/resnet18/scratch/ludb/1over16
 ### 6. Update run notes
 
 Fill in [`baseline/README.md`](../baseline/README.md) with date, GPU, best mIoU, test mIoU.
+
+## Comparing to published results
+
+SemiSegECG paper tables use mIoU from [`semi-seg-ecg/notebooks/perf_eval.ipynb`](../semi-seg-ecg/notebooks/perf_eval.ipynb), not `test_metrics.csv` directly. After testing, open that notebook and point it at your run directory's `test_outputs.npy` and `test_labels.npy` for an apples-to-apples comparison.
 
 ## What gets printed
 

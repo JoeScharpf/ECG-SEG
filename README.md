@@ -31,14 +31,17 @@ See [data/README.md](data/README.md) for details on data layout, LUDB stats, and
 
 ## Phase 1 baseline (gpu2)
 
-Supervised ResNet-18 on LUDB. See [docs/PHASE1.md](docs/PHASE1.md).
+Supervised **ResNet-18 + FCN** on LUDB (1/16 labels), trained from scratch on labeled data only — matches upstream `configs/base/resnet18/scratch.yaml`. See [docs/PHASE1.md](docs/PHASE1.md).
 
 ```bash
 bash scripts/setup_phase1.sh
+conda activate semi_seg_ecg
 bash scripts/run_phase1.sh --gpus 0
 ```
 
 Outputs: `baseline/exps/resnet18/scratch/ludb/1over16/` (checkpoints, `test_metrics.csv`, `training_curves.png`).
+
+To compare with published SemiSegECG tables, recompute mIoU via [`semi-seg-ecg/notebooks/perf_eval.ipynb`](semi-seg-ecg/notebooks/perf_eval.ipynb) from `test_outputs.npy` and `test_labels.npy` (not `test_metrics.csv` alone).
 
 ## Training (semi-supervised)
 
