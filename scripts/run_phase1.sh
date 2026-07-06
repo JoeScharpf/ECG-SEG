@@ -30,8 +30,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 RUN_DIR="baseline/exps/resnet18/scratch/ludb/1over${LABEL_FRACTION}"
+RESULTS_DIR="baseline/results/resnet18_scratch_ludb_1over${LABEL_FRACTION}"
 OUTPUT_DIR="$REPO_ROOT/baseline/exps/resnet18/scratch"
-BENCH_CONFIG="configs/bench/ludb/1over${LABEL_FRACTION}.yaml"
+BASE_CONFIG="../configs/base/resnet18/scratch.yaml"
+BENCH_CONFIG="../configs/bench/ludb/1over${LABEL_FRACTION}.yaml"
 
 echo "=== Phase 1 baseline training ==="
 echo "Repo root:    $REPO_ROOT"
@@ -53,7 +55,7 @@ cd semi-seg-ecg
 
 echo "--- Step 1/3: Train (supervised ResNet-18) ---"
 bash scripts/train.sh \
-    -f configs/base/resnet18/scratch.yaml \
+    -f "$BASE_CONFIG" \
     -o "$BENCH_CONFIG" \
     --output_dir "$OUTPUT_DIR" \
     --gpus "$GPUS"
@@ -61,7 +63,7 @@ bash scripts/train.sh \
 echo ""
 echo "--- Step 2/3: Test (best MeanIoU checkpoint) ---"
 bash scripts/test.sh \
-    -f configs/base/resnet18/scratch.yaml \
+    -f "$BASE_CONFIG" \
     -o "$BENCH_CONFIG" \
     --output_dir "$OUTPUT_DIR" \
     --gpu "$GPUS"
@@ -69,9 +71,10 @@ bash scripts/test.sh \
 cd "$REPO_ROOT"
 
 echo ""
-echo "--- Step 3/3: Plot training curves ---"
-python baseline/plot_results.py --run-dir "$RUN_DIR"
+echo "--- Step 3/3: Plot training curves + publish to baseline/results/ ---"
+python baseline/plot_results.py --run-dir "$RUN_DIR" --publish
 
 echo ""
 echo "Phase 1 run complete."
-echo "Artifacts: $RUN_DIR/"
+echo "Full artifacts (gitignored): $RUN_DIR/"
+echo "Git-tracked summary:         $RESULTS_DIR/"

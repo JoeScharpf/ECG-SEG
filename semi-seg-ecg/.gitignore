@@ -197,4 +197,4 @@ cython_debug/
 data/
 index/
 exps/
-models/
+/models/

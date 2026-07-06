@@ -39,7 +39,7 @@ conda activate semi_seg_ecg
 bash scripts/run_phase1.sh --gpus 0
 ```
 
-Outputs: `baseline/exps/resnet18/scratch/ludb/1over16/` (checkpoints, `test_metrics.csv`, `training_curves.png`).
+Outputs: `baseline/exps/...` (full run, gitignored) and `baseline/results/...` (plots + metrics for GitHub).
 
 To compare with published SemiSegECG tables, recompute mIoU via [`semi-seg-ecg/notebooks/perf_eval.ipynb`](semi-seg-ecg/notebooks/perf_eval.ipynb) from `test_outputs.npy` and `test_labels.npy` (not `test_metrics.csv` alone).
 

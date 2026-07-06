@@ -4,12 +4,14 @@ Plot training curves from SemiSegECG baseline run log.txt.
 Usage (from repo root):
     python baseline/plot_results.py
     python baseline/plot_results.py --run-dir baseline/exps/resnet18/scratch/ludb/1over16
+    python baseline/plot_results.py --run-dir baseline/exps/... --publish
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import shutil
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -17,6 +19,22 @@ import pandas as pd
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_RUN_DIR = REPO_ROOT / "baseline/exps/resnet18/scratch/ludb/1over16"
+
+
+def run_dir_to_results_dir(run_dir: Path) -> Path:
+    """Map exps path to a stable results folder name for git."""
+    try:
+        parts = run_dir.resolve().relative_to(REPO_ROOT).parts
+    except ValueError:
+        return REPO_ROOT / "baseline" / "results" / run_dir.name
+
+    if len(parts) >= 6 and parts[0] == "baseline" and parts[1] == "exps":
+        # baseline/exps/resnet18/scratch/ludb/1over16
+        _, _, backbone, mode, dataset, label_frac = parts[:6]
+        name = f"{backbone}_{mode}_{dataset}_{label_frac}"
+        return REPO_ROOT / "baseline" / "results" / name
+
+    return REPO_ROOT / "baseline" / "results" / run_dir.name
 
 
 def load_log(log_path: Path) -> pd.DataFrame:
@@ -84,24 +102,72 @@ def plot_training_curves(df: pd.DataFrame, out_path: Path) -> None:
     plt.close(fig)
 
 
-def print_summary(df: pd.DataFrame, run_dir: Path, chart_path: Path) -> None:
-    print("\n=== Baseline training summary ===")
-    print(f"  Run directory:   {run_dir}")
-    print(f"  Epochs logged:   {len(df)}")
+def build_summary(df: pd.DataFrame, run_dir: Path) -> dict:
+    summary: dict = {
+        "run_dir": str(run_dir.relative_to(REPO_ROOT)),
+        "epochs_logged": len(df),
+    }
 
     if "valid_loss" in df.columns:
         best_loss, loss_epoch = _best_at_epoch(df, "valid_loss", higher_is_better=False)
-        print(f"  Best valid loss: {best_loss:.4f} @ epoch {loss_epoch}")
+        summary["best_valid_loss"] = best_loss
+        summary["best_valid_loss_epoch"] = loss_epoch
 
     if "MeanIoU" in df.columns:
         best_miou, miou_epoch = _best_at_epoch(df, "MeanIoU", higher_is_better=True)
-        print(f"  Best MeanIoU:    {best_miou:.4f} @ epoch {miou_epoch}")
+        summary["best_valid_mean_iou"] = best_miou
+        summary["best_valid_mean_iou_epoch"] = miou_epoch
 
     test_csv = run_dir / "test_metrics.csv"
     if test_csv.exists():
         test_df = pd.read_csv(test_csv)
         if "MeanIoU" in test_df.columns:
-            print(f"  Test MeanIoU:    {test_df['MeanIoU'].iloc[0]:.4f}")
+            summary["test_mean_iou"] = float(test_df["MeanIoU"].iloc[0])
+
+    return summary
+
+
+def publish_results(run_dir: Path, results_dir: Path, chart_path: Path) -> None:
+    results_dir.mkdir(parents=True, exist_ok=True)
+
+    published_chart = results_dir / "training_curves.png"
+    shutil.copy2(chart_path, published_chart)
+
+    test_csv = run_dir / "test_metrics.csv"
+    if test_csv.exists():
+        shutil.copy2(test_csv, results_dir / "test_metrics.csv")
+
+    df = load_log(run_dir / "log.txt")
+    summary = build_summary(df, run_dir)
+    summary["results_dir"] = str(results_dir.relative_to(REPO_ROOT))
+    with open(results_dir / "summary.json", "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2)
+        f.write("\n")
+
+    print(f"  Published to:    {results_dir}/")
+
+
+def print_summary(df: pd.DataFrame, run_dir: Path, chart_path: Path) -> None:
+    summary = build_summary(df, run_dir)
+
+    print("\n=== Baseline training summary ===")
+    print(f"  Run directory:   {run_dir}")
+    print(f"  Epochs logged:   {summary['epochs_logged']}")
+
+    if "best_valid_loss" in summary:
+        print(
+            f"  Best valid loss: {summary['best_valid_loss']:.4f} "
+            f"@ epoch {summary['best_valid_loss_epoch']}"
+        )
+
+    if "best_valid_mean_iou" in summary:
+        print(
+            f"  Best MeanIoU:    {summary['best_valid_mean_iou']:.4f} "
+            f"@ epoch {summary['best_valid_mean_iou_epoch']}"
+        )
+
+    if "test_mean_iou" in summary:
+        print(f"  Test MeanIoU:    {summary['test_mean_iou']:.4f}")
 
     print(f"  Chart saved:     {chart_path}")
 
@@ -114,6 +180,17 @@ def main() -> None:
         default=DEFAULT_RUN_DIR,
         help="Directory containing log.txt",
     )
+    parser.add_argument(
+        "--publish",
+        action="store_true",
+        help="Copy chart, test_metrics.csv, and summary.json to baseline/results/",
+    )
+    parser.add_argument(
+        "--results-dir",
+        type=Path,
+        default=None,
+        help="Override publish destination (default: derived from --run-dir)",
+    )
     args = parser.parse_args()
 
     run_dir = args.run_dir.resolve()
@@ -123,6 +200,10 @@ def main() -> None:
     df = load_log(log_path)
     plot_training_curves(df, chart_path)
     print_summary(df, run_dir, chart_path)
+
+    if args.publish:
+        results_dir = args.results_dir.resolve() if args.results_dir else run_dir_to_results_dir(run_dir)
+        publish_results(run_dir, results_dir, chart_path)
 
 
 if __name__ == "__main__":

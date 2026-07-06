@@ -15,20 +15,40 @@ conda activate semi_seg_ecg
 bash scripts/run_phase1.sh --gpus 0
 ```
 
-## Fill in after a run
+`run_phase1.sh` writes full artifacts to gitignored `baseline/exps/` and copies plots + metrics to **`baseline/results/`** for GitHub.
+
+## Results (LUDB 1/16)
 
 | Field | Value |
 |-------|-------|
-| Date | |
-| GPU | |
+| Date | 2026-07-06 |
+| GPU | gpu2, NVIDIA RTX A6000 |
 | Label fraction | 1/16 |
-| Best valid MeanIoU | |
-| Best epoch | |
-| Test MeanIoU | (from `test_metrics.csv`; see note below) |
-| Output directory | `baseline/exps/resnet18/scratch/ludb/1over16/` |
-| Training chart | `baseline/exps/.../training_curves.png` |
+| Best valid MeanIoU | 0.6672 |
+| Best epoch | 83 |
+| Test MeanIoU | 0.6661 |
+| Paper baseline (Scratch) | 67.3% |
+| Training chart | [`baseline/results/resnet18_scratch_ludb_1over16/training_curves.png`](results/resnet18_scratch_ludb_1over16/training_curves.png) |
 
-Checkpoints (`.pth`) and charts stay on the server under `baseline/exps/` (gitignored).
+Checkpoints (`.pth`) and `.npy` files stay on the server under `baseline/exps/` (gitignored).
+
+## Publish results to the repo
+
+After a run on gpu2, publish from existing exps (if you ran train/test manually):
+
+```bash
+python baseline/plot_results.py \
+  --run-dir baseline/exps/resnet18/scratch/ludb/1over16 \
+  --publish
+```
+
+Copy `baseline/results/` to your Mac, then commit and push:
+
+```bash
+scp -J joe@safeai-gpu3.andrew.cmu.edu \
+  -r joe@safeai-gpu2.lan.local.cmu.edu:~/ECG-SEG/baseline/results/ \
+  ~/Desktop/safe/baseline/
+```
 
 ## Comparing to the paper
 

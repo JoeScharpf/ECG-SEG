@@ -57,11 +57,13 @@ Check `baseline/exps/resnet18/scratch/ludb/1over16/`:
 | `test_labels.npy` | Ground-truth labels (for paper-style eval) |
 | `training_curves.png` | Loss and mIoU charts |
 
-Re-run plots only:
+Re-run plots and publish to `baseline/results/` (for GitHub):
 
 ```bash
-python baseline/plot_results.py --run-dir baseline/exps/resnet18/scratch/ludb/1over16
+python baseline/plot_results.py --run-dir baseline/exps/resnet18/scratch/ludb/1over16 --publish
 ```
+
+Copy `baseline/results/` to your Mac and commit. See [`baseline/README.md`](../baseline/README.md) for scp instructions.
 
 Optional TensorBoard:
 
