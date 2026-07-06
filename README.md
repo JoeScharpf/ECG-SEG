@@ -6,7 +6,10 @@ Research workspace for semi-supervised ECG delineation (segmentation), built on 
 
 ```
 ECG-SEG/
+├── baseline/       # Phase 1 outputs and plot_results.py
 ├── data/           # Data download, inspection, and split audit scripts
+├── docs/           # Phase guides (PHASE1.md)
+├── scripts/        # setup_phase1.sh, run_phase1.sh
 ├── semi-seg-ecg/   # SemiSegECG benchmark (training configs, models, scripts)
 └── README.md
 ```
@@ -26,7 +29,18 @@ python data/audit.py
 
 See [data/README.md](data/README.md) for details on data layout, LUDB stats, and split audit results.
 
-## Training
+## Phase 1 baseline (gpu2)
+
+Supervised ResNet-18 on LUDB. See [docs/PHASE1.md](docs/PHASE1.md).
+
+```bash
+bash scripts/setup_phase1.sh
+bash scripts/run_phase1.sh --gpus 0
+```
+
+Outputs: `baseline/exps/resnet18/scratch/ludb/1over16/` (checkpoints, `test_metrics.csv`, `training_curves.png`).
+
+## Training (semi-supervised)
 
 Training uses the `semi-seg-ecg` benchmark. Set up a conda environment per [semi-seg-ecg/README.md](semi-seg-ecg/README.md), then run on a GPU server:
 

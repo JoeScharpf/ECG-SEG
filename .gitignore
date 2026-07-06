@@ -9,6 +9,9 @@ venv/
 .DS_Store
 
 # Downloaded benchmark data (re-fetch with: python data/data.py --download)
+# Baseline run artifacts (re-generate with: bash scripts/run_phase1.sh)
+baseline/exps/**
+!baseline/exps/.gitkeep
 semi-seg-ecg/data/
 semi-seg-ecg/index/
 semi-seg-ecg/exps/
