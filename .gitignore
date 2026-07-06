@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# Downloaded benchmark data (re-fetch with: python data/data.py --download)
+semi-seg-ecg/data/
+semi-seg-ecg/index/
+semi-seg-ecg/exps/
+semi-seg-ecg/models/
