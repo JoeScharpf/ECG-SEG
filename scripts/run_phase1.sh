@@ -30,7 +30,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 RUN_DIR="baseline/exps/resnet18/scratch/ludb/1over${LABEL_FRACTION}"
-OUTPUT_DIR="../baseline/exps/resnet18/scratch"
+OUTPUT_DIR="$REPO_ROOT/baseline/exps/resnet18/scratch"
 BENCH_CONFIG="configs/bench/ludb/1over${LABEL_FRACTION}.yaml"
 
 echo "=== Phase 1 baseline training ==="
