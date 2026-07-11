@@ -68,6 +68,8 @@ def train_one_epoch(
         if labels.dim() == 3:
             labels = labels.squeeze(1)
 
+        # Train on token CE only. Do not use teacher-forced seg_logits for metrics;
+        # val/test call evaluate() with decode=True (true autoregressive inference).
         with torch.cuda.amp.autocast(enabled=use_amp):
             results = model(inputs, labels, return_loss=True, decode=False)
         loss = results["loss"]
@@ -128,6 +130,7 @@ def evaluate(
         if labels.dim() == 3:
             labels = labels.squeeze(1)
 
+        # decode=True: real AR generate → rasterize → MeanIoU (not teacher-forced).
         with torch.cuda.amp.autocast(enabled=use_amp):
             results = model(inputs, labels, return_loss=True, decode=True)
         loss = results["loss"].item()

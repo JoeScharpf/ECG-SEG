@@ -43,19 +43,34 @@ class Vocab:
 
 
 class SegmentTokenizer:
-    """Convert dense multi-class masks <-> quantized segment token sequences."""
+    """Convert dense multi-class masks <-> quantized segment token sequences.
+
+    SemiSegECG multi-class labels use {0=bg, 1=P, 2=QRS, 3=T}, so num_classes=4
+    by default. Wave tokens are emitted only for classes 1..num_classes-1.
+    """
 
     def __init__(
         self,
         signal_length: int = 2500,
         num_bins: int = 250,
         max_segments: int = 32,
+        num_classes: int = 4,
         vocab: Vocab | None = None,
     ):
+        if num_classes < 2:
+            raise ValueError(f"num_classes must be >= 2, got {num_classes}")
         self.signal_length = signal_length
         self.num_bins = num_bins
         self.max_segments = max_segments
+        self.num_classes = num_classes
+        self.wave_classes = tuple(range(1, num_classes))  # exclude background
         self.vocab = vocab or Vocab()
+        # Vocab currently encodes classes 1..3 as tokens 3..5; keep in sync for LUDB.
+        if num_classes != 4:
+            raise ValueError(
+                "SegmentTokenizer currently supports num_classes=4 "
+                f"(bg+P+QRS+T); got {num_classes}"
+            )
         self.max_seq_len = 1 + max_segments * 3 + 1  # BOS + triples + EOS
 
     @property
@@ -89,9 +104,13 @@ class SegmentTokenizer:
             while t < n and int(mask[t]) == c:
                 t += 1
             end = t - 1
-            if c in (1, 2, 3):
+            if c in self.wave_classes:
                 segments.append((c, start, end))
-            # Ignore unexpected class ids
+            elif c != 0:
+                raise ValueError(
+                    f"Unexpected class id {c} in mask "
+                    f"(expected 0 or {self.wave_classes})"
+                )
         return segments
 
     def segments_to_tokens(self, segments: Sequence[Tuple[int, int, int]]) -> List[int]:
