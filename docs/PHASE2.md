@@ -45,8 +45,11 @@ python baseline/plot_results.py \
 
 - **Multi-class only** — non-overlapping P/QRS/T segments (advisor-aligned with SemiSegECG)
 - Token vocab: BOS/EOS/PAD + class tokens + coordinate bins (`num_bins=250`)
-- Train loss: token cross-entropy (teacher forcing)
-- Eval: autoregressive decode → rasterize → MeanIoU
+- `num_classes: 4` is set in `configs/base/pix2seq/scratch.yaml` (and must match `metric.num_classes`); out-of-range mask ids raise instead of silent clamping
+- **Train loss:** token cross-entropy with teacher forcing on the **token** sequence only (no teacher-forced `seg_logits`)
+- **Eval / MeanIoU:** real autoregressive `generate()` → rasterize to a dense mask → MeanIoU (same metric path as Phase 1). Do not use teacher-forced token argmax for reported IoU — that would be conditioned on ground-truth prefixes and inflate scores vs test-time decoding
+- Fixed-length LUDB inputs (`signal_length: 2500`); no encoder memory padding mask
+- `generate(max_len=...)` only limits decode *steps*; returned sequences are always padded to `max_seq_len` for batch decode
 
 ## Tokenizer smoke test (local)
 
