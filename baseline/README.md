@@ -53,3 +53,11 @@ scp -J joe@safeai-gpu3.andrew.cmu.edu \
 ## Comparing to the paper
 
 Published SemiSegECG mIoU numbers are computed with [`semi-seg-ecg/notebooks/perf_eval.ipynb`](../semi-seg-ecg/notebooks/perf_eval.ipynb) from `test_outputs.npy` and `test_labels.npy` in the run directory. `test_metrics.csv` is convenient for quick checks but may differ slightly from the paper tables.
+
+## Phase 2: Pix2Seq
+
+See [`docs/PHASE2.md`](../docs/PHASE2.md). Same LUDB 1/16 splits and MeanIoU; ResNet-18 encoder + autoregressive segment decoder.
+
+```bash
+bash scripts/run_pix2seq.sh --gpus 0
+```

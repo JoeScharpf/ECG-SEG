@@ -4,3 +4,4 @@ import algorithms.fixmatch
 import algorithms.mean_teacher
 import algorithms.stpp
 import algorithms.reco
+import algorithms.pix2seq
