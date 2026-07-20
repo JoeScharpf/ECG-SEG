@@ -1,0 +1,19 @@
+{
+  "experiment": "ResNet-18 + U-Net decode head, supervised (scratch)",
+  "dataset": "LUDB",
+  "label_ratio": "1/16",
+  "metric": "MeanIoU (include_background=true, 4 classes)",
+  "num_seeds": 3,
+  "seeds": [
+    {"seed": 0, "test_mean_iou": 0.8204, "best_valid_mean_iou": 0.8147, "best_valid_epoch": 71},
+    {"seed": 1, "test_mean_iou": 0.8156, "best_valid_mean_iou": 0.8118, "best_valid_epoch": 90},
+    {"seed": 2, "test_mean_iou": 0.8175, "best_valid_mean_iou": 0.8129, "best_valid_epoch": 71}
+  ],
+  "test_mean_iou_mean": 0.8178,
+  "test_mean_iou_std": 0.0024,
+  "test_mean_iou_min": 0.8156,
+  "test_mean_iou_max": 0.8204,
+  "baseline_resnet18_fcn_test_mean_iou": 0.6661,
+  "paper_table2_ludb_1over16_best": 0.736,
+  "paper_table2_ludb_1over16_best_method": "ViT-Tiny + FCN + Mean Teacher"
+}
