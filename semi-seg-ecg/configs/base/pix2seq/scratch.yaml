@@ -32,6 +32,19 @@ pix2seq:
   dropout: 0.1
   encoder_channels: 512
 
+  # --- Plan knobs (defaults below reproduce the original 0.227 run) ---
+  # Step 4: positional encoding on encoder memory. none | sinusoidal | learned
+  memory_pos_encoding: none
+  max_memory_len: 1024        # only used by learned PE (upper bound on memory length)
+  # Step 3: grammar-constrained autoregressive decoding at eval/test.
+  decode_constrained: false
+  decode_min_segments: 0      # ablation: force >= N segments before EOS (0..max_segments)
+  decode_chronological: true  # when constrained, force each onset >= previous offset
+  # Step 6: distance-aware coordinate loss. none | soft | expected_l1
+  coord_loss: none
+  coord_loss_weight: 0.0
+  coord_soft_sigma: 1.0       # Gaussian width (in bins) for coord_loss=soft
+
 dataset:
   ecg_dir: <FILL IN>
   label_dir: <FILL IN>

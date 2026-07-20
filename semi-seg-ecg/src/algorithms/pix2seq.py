@@ -117,13 +117,21 @@ def evaluate(
     metric_fn,
     use_amp=True,
 ):
-    """Evaluate with autoregressive decode → rasterized multi-class masks → MeanIoU."""
+    """Evaluate with autoregressive decode → rasterized multi-class masks → MeanIoU.
+
+    Also logs generation-quality signals (mean predicted segment count, background
+    fraction) and per-class IoU, since the token CE / teacher-forced loss does not
+    reflect free-running decode quality (see plan Step 5).
+    """
     model.eval()
+    tokenizer = model.module.tokenizer if hasattr(model, "module") else model.tokenizer
     metric_logger = misc.MetricLogger(delimiter="  ")
     header = "Eval:"
 
     outputs_total = []
     labels_total = []
+    seg_counts = []
+    bg_fracs = []
     for samples in metric_logger.log_every(data_loader, 10, header):
         inputs = samples["ecg"].to(device, non_blocking=True)
         labels = samples["target"].to(device, non_blocking=True)
@@ -136,6 +144,13 @@ def evaluate(
         loss = results["loss"].item()
         logits = results["seg_logits"]
         outputs = torch.softmax(logits, dim=1)
+
+        # Generation-quality diagnostics (per-batch, before gather).
+        if "tokens" in results:
+            tok = results["tokens"].detach().cpu()
+            for i in range(tok.size(0)):
+                seg_counts.append(len(tokenizer.tokens_to_segments(tok[i].tolist())))
+        bg_fracs.append((outputs.argmax(dim=1) == 0).float().mean().item())
 
         outputs = misc.concat_all_gather(outputs)
         preds = F.one_hot(outputs.argmax(dim=1), num_classes=outputs.size(1)).movedim(1, -1)
@@ -160,13 +175,46 @@ def evaluate(
         else:
             metric_dict[k] = v
 
+    outputs = torch.cat(outputs_total, dim=0)
+    labels_cat = torch.cat(labels_total, dim=0)
+
+    # Per-class IoU (include_background) for logging, without disturbing the scalar
+    # MeanIoU used for checkpoint selection.
+    per_class_iou = _per_class_iou(outputs, labels_cat)
+    for c, iou_c in enumerate(per_class_iou):
+        metric_dict[f"IoU_class{c}"] = iou_c
+    if seg_counts:
+        metric_dict["gen_mean_segments"] = float(np.mean(seg_counts))
+    if bg_fracs:
+        metric_dict["gen_bg_fraction"] = float(np.mean(bg_fracs))
+
     metric_str = "  ".join([f"{k}: {v:.3f}" for k, v in metric_dict.items()])
     metric_str = f"{metric_str}  loss: {metric_logger.loss.global_avg:.3f}"
     print(f"* {metric_str}")
-    outputs = torch.cat(outputs_total, dim=0)
-    labels_cat = torch.cat(labels_total, dim=0)
     metric_fn.reset()
     return valid_stats, metric_dict, outputs, labels_cat
+
+
+def _per_class_iou(outputs: torch.Tensor, labels_oh: torch.Tensor):
+    """Per-class IoU from (N, C, T) softmax outputs and (N, C, T) one-hot labels.
+
+    These are micro-averaged (intersection/union pooled across all samples per
+    class), so they expose per-class (esp. P-wave) performance as a cross-check.
+    Note: torchmetrics MeanIoU macro-averages per-image IoU before averaging
+    across classes, so mean(IoU_class*) will be close to but not exactly equal to
+    the reported scalar MeanIoU used for checkpoint selection.
+    """
+    num_classes = outputs.size(1)
+    pred = outputs.argmax(dim=1)
+    gt = labels_oh.argmax(dim=1)
+    ious = []
+    for c in range(num_classes):
+        p = pred == c
+        g = gt == c
+        inter = (p & g).sum().item()
+        union = (p | g).sum().item()
+        ious.append(inter / union if union > 0 else float("nan"))
+    return ious
 
 
 def train(config):
