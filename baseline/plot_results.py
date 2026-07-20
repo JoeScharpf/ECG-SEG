@@ -65,8 +65,21 @@ def _best_at_epoch(df: pd.DataFrame, col: str, *, higher_is_better: bool) -> tup
     return float(row[col]), int(row["epoch"])
 
 
+# Class ids -> names for the multi-class ECG delineation task (0=bg).
+_CLASS_NAMES = {0: "bg", 1: "P", 2: "QRS", 3: "T"}
+
+
+def _per_class_iou_columns(df: pd.DataFrame) -> list[str]:
+    """Ordered IoU_class* columns present in the log (e.g. IoU_class0..3)."""
+    cols = [c for c in df.columns if c.startswith("IoU_class")]
+    return sorted(cols, key=lambda c: int(c.replace("IoU_class", "")))
+
+
 def plot_training_curves(df: pd.DataFrame, out_path: Path) -> None:
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+    # Add a third panel only when per-class IoU was logged (Pix2Seq eval).
+    per_class_cols = _per_class_iou_columns(df)
+    n_panels = 3 if per_class_cols else 2
+    fig, axes = plt.subplots(1, n_panels, figsize=(6 * n_panels, 4))
 
     epochs = df["epoch"]
 
@@ -96,6 +109,18 @@ def plot_training_curves(df: pd.DataFrame, out_path: Path) -> None:
         axes[1].set_title("MeanIoU not found in log.txt")
         axes[1].axis("off")
 
+    if per_class_cols:
+        for col in per_class_cols:
+            cid = int(col.replace("IoU_class", ""))
+            label = f"{cid}:{_CLASS_NAMES.get(cid, cid)}"
+            axes[2].plot(epochs, df[col], label=label, alpha=0.9)
+        axes[2].set_xlabel("Epoch")
+        axes[2].set_ylabel("IoU")
+        axes[2].set_title("Per-class validation IoU")
+        axes[2].set_ylim(0.0, 1.0)
+        axes[2].legend()
+        axes[2].grid(True, alpha=0.3)
+
     fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=150, bbox_inches="tight")
@@ -117,6 +142,19 @@ def build_summary(df: pd.DataFrame, run_dir: Path) -> dict:
         best_miou, miou_epoch = _best_at_epoch(df, "MeanIoU", higher_is_better=True)
         summary["best_valid_mean_iou"] = best_miou
         summary["best_valid_mean_iou_epoch"] = miou_epoch
+
+        # Per-class IoU at the best-MeanIoU epoch, when logged (Pix2Seq eval).
+        per_class_cols = _per_class_iou_columns(df)
+        if per_class_cols:
+            best_row = df.loc[df["epoch"] == miou_epoch]
+            if not best_row.empty:
+                best_row = best_row.iloc[0]
+                summary["per_class_iou_at_best"] = {
+                    _CLASS_NAMES.get(
+                        int(c.replace("IoU_class", "")), c
+                    ): float(best_row[c])
+                    for c in per_class_cols
+                }
 
     test_csv = run_dir / "test_metrics.csv"
     if test_csv.exists():
