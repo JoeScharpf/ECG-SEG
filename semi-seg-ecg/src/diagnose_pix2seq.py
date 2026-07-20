@@ -13,12 +13,29 @@
 
 import argparse
 import os
+import sys
 from collections import defaultdict
 
 import mergedeep
 import numpy as np
 import torch
 import yaml
+
+
+class _Tee:
+    """Duplicate stdout to a file so the diagnostics report is persisted."""
+
+    def __init__(self, path: str):
+        self.terminal = sys.stdout
+        self.file = open(path, "w", encoding="utf-8")
+
+    def write(self, data):
+        self.terminal.write(data)
+        self.file.write(data)
+
+    def flush(self):
+        self.terminal.flush()
+        self.file.flush()
 
 from models.pix2seq.model import build_pix2seq_from_cfg
 from utils.semi_dataset import build_seg_dataset, get_dataloader
@@ -34,6 +51,10 @@ def parse() -> dict:
     parser.add_argument("--split", default="valid", type=str, help="valid|test")
     parser.add_argument("--max_batches", default=0, type=int, help="0 = all batches")
     parser.add_argument("--device", default=None, type=str)
+    parser.add_argument(
+        "--out_report", default="", type=str,
+        help="Optional path to also write the printed report to (persists diagnostics).",
+    )
     args = parser.parse_args()
 
     with open(os.path.realpath(args.config_path), "r") as f:
@@ -157,6 +178,10 @@ def valid_triple_rate(tokens, model):
 def main():
     config = parse()
     args = config["_args"]
+    if args.get("out_report"):
+        os.makedirs(os.path.dirname(os.path.abspath(args["out_report"])), exist_ok=True)
+        sys.stdout = _Tee(args["out_report"])
+        print(f"# Pix2Seq diagnostics report -> {args['out_report']}")
     device = torch.device(
         args["device"] or ("cuda" if torch.cuda.is_available() else "cpu")
     )

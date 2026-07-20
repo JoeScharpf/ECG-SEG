@@ -31,10 +31,14 @@ BENCH_CONFIG="../configs/bench/ludb/1over${LABEL_FRACTION}.yaml"
 
 export CUDA_VISIBLE_DEVICES="$GPUS"
 
+# Persist the report next to the run's published results for the record.
+REPORT_PATH="$REPO_ROOT/baseline/results/pix2seq_scratch_ludb_1over${LABEL_FRACTION}/diagnostics_${SPLIT}.txt"
+
 cd semi-seg-ecg/src
 python diagnose_pix2seq.py \
     -f "$BASE_CONFIG" \
     -o "$BENCH_CONFIG" \
     --output_dir "$OUTPUT_DIR" \
     --split "$SPLIT" \
-    --max_batches "$MAX_BATCHES"
+    --max_batches "$MAX_BATCHES" \
+    --out_report "$REPORT_PATH"

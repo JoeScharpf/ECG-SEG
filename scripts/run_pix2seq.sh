@@ -6,6 +6,8 @@ cd "$REPO_ROOT"
 
 GPUS="0"
 LABEL_FRACTION="16"
+BENCH_CONFIG=""
+RUN_SUBDIR=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -17,9 +19,20 @@ while [[ $# -gt 0 ]]; do
             LABEL_FRACTION="$2"
             shift 2
             ;;
+        --bench-config)
+            BENCH_CONFIG="$2"
+            shift 2
+            ;;
+        --run-subdir)
+            RUN_SUBDIR="$2"
+            shift 2
+            ;;
         -h|--help)
-            echo "Usage: bash scripts/run_pix2seq.sh [--gpus 0] [--label-fraction 16]"
-            echo "Run Pix2Seq multi-class baseline on LUDB (same splits as Phase 1 ResNet)."
+            echo "Usage: bash scripts/run_pix2seq.sh [--gpus 0] [--label-fraction 16] \\"
+            echo "         [--bench-config ../configs/bench/ludb/<file>.yaml] [--run-subdir ludb/<name>]"
+            echo "Run Pix2Seq multi-class model on LUDB (same splits as Phase 1 ResNet)."
+            echo "--bench-config / --run-subdir let you run experiment variants (e.g. hi-res)"
+            echo "into a separate exp dir. --run-subdir must match exp_name in the bench config."
             exit 0
             ;;
         *)
@@ -29,11 +42,21 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-RUN_DIR="baseline/exps/pix2seq/scratch/ludb/1over${LABEL_FRACTION}"
-RESULTS_DIR="baseline/results/pix2seq_scratch_ludb_1over${LABEL_FRACTION}"
+# Default to the standard 1/N bench config unless an override was passed.
+if [[ -z "$BENCH_CONFIG" ]]; then
+    BENCH_CONFIG="../configs/bench/ludb/1over${LABEL_FRACTION}.yaml"
+fi
+# RUN_SUBDIR must match exp_name in the bench config (train() joins output_dir/exp_name).
+if [[ -z "$RUN_SUBDIR" ]]; then
+    RUN_SUBDIR="ludb/1over${LABEL_FRACTION}"
+fi
+# Flatten the subdir (ludb/1over16_hires -> ludb_1over16_hires) for the results folder.
+RESULTS_NAME="pix2seq_scratch_$(echo "$RUN_SUBDIR" | tr '/' '_')"
+
+RUN_DIR="baseline/exps/pix2seq/scratch/${RUN_SUBDIR}"
+RESULTS_DIR="baseline/results/${RESULTS_NAME}"
 OUTPUT_DIR="$REPO_ROOT/baseline/exps/pix2seq/scratch"
 BASE_CONFIG="../configs/base/pix2seq/scratch.yaml"
-BENCH_CONFIG="../configs/bench/ludb/1over${LABEL_FRACTION}.yaml"
 
 echo "=== Pix2Seq Phase 2 training ==="
 echo "Repo root:    $REPO_ROOT"

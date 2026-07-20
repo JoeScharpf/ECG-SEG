@@ -1,0 +1,25 @@
+# Hi-res Pix2Seq experiment on LUDB 1/16. Overrides configs/base/pix2seq/scratch.yaml.
+# Motivated by diagnostics on the 0.227 run: sequences are already well-formed and
+# correctly-counted (constrained decode == unconstrained), so the bottleneck is
+# COORDINATE RESOLUTION — ECG waves are only ~2-3 bins wide at num_bins=250, so a
+# ~1.6-bin boundary error tanks IoU. This run attacks that directly.
+#
+# Writes to a separate exp dir (ludb/1over16_hires) so the 0.227 baseline is preserved.
+exp_name: ludb/1over16_hires
+
+dataset:
+  ecg_dir: ../data/ludb/ecg
+  label_dir: ../data/ludb/label
+  index_dir: ../index/ludb
+  train_unlabeled_csv: LUDB_train_unlabeled.csv
+  train_labeled_csv: LUDB_train_labeled_1over16.csv
+  valid_csv: LUDB_valid.csv
+  test_csv: LUDB_test.csv
+
+pix2seq:
+  num_bins: 1000        # bin width 2.5 samples (was 10): waves span ~10-12 bins
+  max_segments: 40      # valid p99=40; stops truncating ~18% of val GT (was 32)
+  memory_pos_encoding: sinusoidal   # give the decoder positional grounding on memory
+  coord_loss: soft      # distance-aware Gaussian targets (exact-bin acc was only 0.34)
+  coord_loss_weight: 1.0
+  coord_soft_sigma: 1.5 # Gaussian width in bins
