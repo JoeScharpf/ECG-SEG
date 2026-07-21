@@ -29,6 +29,8 @@ Per-seed folders (with individual `training_curves.png`, `summary.json`,
 `test_metrics.csv`) are in the sibling
 `resnet18_scratch_unet_ludb_1over16_unet_seed{0,1,2}/` directories.
 
+**Visual examples:** [`../resnet18_scratch_unet_ludb_1over16/visual_examples/`](../resnet18_scratch_unet_ludb_1over16/visual_examples/) — ECG + GT vs prediction overlays for the test set.
+
 ## Reproduce
 
 ```bash
