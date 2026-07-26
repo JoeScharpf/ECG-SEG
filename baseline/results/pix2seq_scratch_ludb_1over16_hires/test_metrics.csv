@@ -1,0 +1,2 @@
+MeanIoU,IoU_class0,IoU_class1,IoU_class2,IoU_class3,gen_mean_segments,gen_bg_fraction,loss
+0.2634,0.5467,0.0935,0.1418,0.2485,23.0970,0.6155,7.9540

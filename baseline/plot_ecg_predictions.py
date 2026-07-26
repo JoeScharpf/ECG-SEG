@@ -1,9 +1,14 @@
 """
-Plot ECG delineation examples: waveform + ground truth vs U-Net prediction.
+Plot ECG delineation examples: waveform + ground truth vs model prediction.
 
 Usage (from repo root):
     python baseline/plot_ecg_predictions.py \\
         --run-dir baseline/exps/resnet18/scratch_unet/ludb/1over16 \\
+        --publish
+
+    python baseline/plot_ecg_predictions.py \\
+        --run-dir baseline/exps/pix2seq/scratch/ludb/1over16_hires \\
+        --pred-label "Pix2Seq prediction" \\
         --publish
 
 Requires test_outputs.npy and test_labels.npy in --run-dir (produced by test.sh).
@@ -90,6 +95,7 @@ def plot_example(
     title: str,
     sample_iou: float,
     out_path: Path,
+    pred_label: str = "Prediction",
 ) -> None:
     t = np.arange(len(ecg))
     fig, axes = plt.subplots(3, 1, figsize=(14, 5), sharex=True, height_ratios=[1.2, 1, 1])
@@ -99,7 +105,7 @@ def plot_example(
     axes[0].set_title(f"{title}  |  sample mIoU = {sample_iou:.3f}")
     axes[0].grid(True, alpha=0.25)
 
-    for ax, labels, label in zip(axes[1:], [gt, pred], ["Ground truth", "U-Net prediction"]):
+    for ax, labels, label in zip(axes[1:], [gt, pred], ["Ground truth", pred_label]):
         _shade_classes(ax, t, labels)
         ax.plot(t, ecg, color="black", linewidth=0.4, alpha=0.35)
         ax.set_ylabel(label)
@@ -137,7 +143,7 @@ def pick_indices(ious: np.ndarray, k_extra: int = 2) -> list[tuple[str, int]]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Plot U-Net ECG delineation examples")
+    parser = argparse.ArgumentParser(description="Plot ECG delineation examples")
     parser.add_argument(
         "--run-dir",
         type=Path,
@@ -149,6 +155,12 @@ def main() -> None:
         type=Path,
         default=None,
         help="Where to save PNGs (default: <run-dir>/visual_examples)",
+    )
+    parser.add_argument(
+        "--pred-label",
+        type=str,
+        default="Prediction",
+        help='Y-axis label for the prediction panel (e.g. "Pix2Seq prediction")',
     )
     parser.add_argument(
         "--publish",
@@ -189,7 +201,13 @@ def main() -> None:
         title = f"{fname}  (patient {patient_id})"
         png_name = f"example_{tag}_idx{idx}.png"
         plot_example(
-            ecg, gt[idx], pred[idx], title, float(ious[idx]), out_dir / png_name
+            ecg,
+            gt[idx],
+            pred[idx],
+            title,
+            float(ious[idx]),
+            out_dir / png_name,
+            pred_label=args.pred_label,
         )
         manifest.append({
             "tag": tag,

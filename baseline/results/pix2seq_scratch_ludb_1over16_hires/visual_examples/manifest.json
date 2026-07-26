@@ -1,0 +1,42 @@
+[
+  {
+    "tag": "best",
+    "index": 340,
+    "waveform": "36_lead_V5.pkl",
+    "patient_id": 36,
+    "sample_mean_iou": 0.4422,
+    "file": "example_best_idx340.png"
+  },
+  {
+    "tag": "median",
+    "index": 115,
+    "waveform": "132_lead_aVL.pkl",
+    "patient_id": 132,
+    "sample_mean_iou": 0.2657,
+    "file": "example_median_idx115.png"
+  },
+  {
+    "tag": "worst",
+    "index": 95,
+    "waveform": "130_lead_III.pkl",
+    "patient_id": 130,
+    "sample_mean_iou": 0.1152,
+    "file": "example_worst_idx95.png"
+  },
+  {
+    "tag": "good_p75",
+    "index": 185,
+    "waveform": "151_lead_V6.pkl",
+    "patient_id": 151,
+    "sample_mean_iou": 0.3127,
+    "file": "example_good_p75_idx185.png"
+  },
+  {
+    "tag": "good_p90",
+    "index": 178,
+    "waveform": "151_lead_II.pkl",
+    "patient_id": 151,
+    "sample_mean_iou": 0.3583,
+    "file": "example_good_p90_idx178.png"
+  }
+]
