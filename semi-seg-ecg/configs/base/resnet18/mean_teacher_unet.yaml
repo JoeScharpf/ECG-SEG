@@ -111,7 +111,7 @@ metric:
   sync_on_compute: false
   num_classes: 4
   include_background: true
-  per_class: true
+  per_class: false
   input_format: one-hot
   target_metrics:
   - MeanIoU

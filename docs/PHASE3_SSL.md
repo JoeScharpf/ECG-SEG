@@ -29,6 +29,7 @@ Across FCN vs U-Net and supervised vs SSL, keep identical:
 | FixMatch `conf_thresh` | 0.80 |
 | Checkpoint | `best-MeanIoU` on **validation** |
 | Val / test cadence | framework default (each epoch val; test after train) |
+| `metric.per_class` | `false` (scalar MeanIoU for checkpointing; per-class IoU from `test_*.npy` in Phase 2) |
 
 Also record: trainable param count, train time/epoch, peak GPU memory.
 
