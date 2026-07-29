@@ -1,0 +1,30 @@
+{
+  "checkpoint": "../baseline/exps/resnet18/mean_teacher_unet/ludb/1over16/best-MeanIoU.pth",
+  "split": "valid",
+  "band_samples": 4,
+  "band_ms": 16.0,
+  "regions": {
+    "interior": {
+      "n": 269975,
+      "acc": 0.9647671080655617
+    },
+    "onset_band": {
+      "n": 103851,
+      "acc": 0.7836900944622585
+    },
+    "offset_band": {
+      "n": 103851,
+      "acc": 0.8098333188895629
+    },
+    "far_background": {
+      "n": 716045,
+      "acc": 0.9811157120013407
+    },
+    "all": {
+      "n": 1170000,
+      "acc": 0.9457119658119658
+    }
+  },
+  "boundary_gap": 0.1810770136033032,
+  "justifies_boundary_ssl": true
+}

@@ -1,0 +1,78 @@
+{
+  "n_recordings": 474,
+  "signal_length": 2500,
+  "fs_hz": 250.0,
+  "match_iou_threshold": 0.1,
+  "beat_window_samples": 250,
+  "pixel_iou": {
+    "background": 0.9208551170868243,
+    "P": 0.7707251806261707,
+    "QRS": 0.8649727097743832,
+    "T": 0.8309177977088129,
+    "mean": 0.8468677012990478
+  },
+  "detection": {
+    "n_gt_segments": 11657,
+    "n_pred_segments": 12040,
+    "n_matched_pairs": 11461,
+    "match_rate_vs_gt": 0.9831860684567213,
+    "extra_pred_fragments": 369,
+    "fragmentation_rate": 0.03064784053156146
+  },
+  "boundary_mae": {
+    "P": {
+      "onset": {
+        "n": 3271,
+        "mae_samples": 2.35554876184653,
+        "mae_ms": 9.42219504738612
+      },
+      "offset": {
+        "n": 3271,
+        "mae_samples": 2.2629165392846224,
+        "mae_ms": 9.05166615713849
+      }
+    },
+    "QRS": {
+      "onset": {
+        "n": 4325,
+        "mae_samples": 1.6654335260115607,
+        "mae_ms": 6.661734104046243
+      },
+      "offset": {
+        "n": 4325,
+        "mae_samples": 1.7870520231213873,
+        "mae_ms": 7.148208092485549
+      }
+    },
+    "T": {
+      "onset": {
+        "n": 3865,
+        "mae_samples": 4.196119016817594,
+        "mae_ms": 16.784476067270376
+      },
+      "offset": {
+        "n": 3865,
+        "mae_samples": 3.4745148771021994,
+        "mae_ms": 13.898059508408798
+      }
+    }
+  },
+  "intervals": {
+    "qrs_duration": {
+      "n": 4325,
+      "mae_samples": 2.64878612716763,
+      "mae_ms": 10.59514450867052
+    },
+    "pr": {
+      "n": 3716,
+      "mae_samples": 2.9878902045209905,
+      "mae_ms": 11.951560818083962
+    },
+    "qt": {
+      "n": 4313,
+      "mae_samples": 4.228147461163923,
+      "mae_ms": 16.91258984465569
+    }
+  },
+  "run_dir": "/Users/josephscharpf/Desktop/safe/baseline/exps/resnet18/mean_teacher_unet/ludb/1over16"
+}

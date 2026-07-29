@@ -76,6 +76,54 @@ bash scripts/run_ssl.sh --method mean_teacher --head unet --seed 2 --gpus 0
 | `baseline/exps/resnet18/fixmatch/ludb/1over16/` | FCN + FixMatch |
 | `baseline/results/resnet18_*_ludb_1over16/` | Published curves + metrics |
 
+## Phase 2 — Boundary / interval metrics
+
+After a run has `test_outputs.npy` / `test_labels.npy`:
+
+```bash
+python baseline/eval_boundaries.py \
+  --run-dir baseline/exps/resnet18/mean_teacher_unet/ludb/1over16 \
+  --out baseline/results/resnet18_mean_teacher_unet_ludb_1over16/boundary_metrics.json
+```
+
+Matching rules (`--match-iou`, `--beat-window`) should be chosen on **validation**
+and locked before final test claims.
+
+## Phase 2.5 — Teacher boundary diagnostic (labeled val only)
+
+```bash
+cd semi-seg-ecg
+python diagnose_teacher_boundaries.py \
+  --config_path configs/base/resnet18/mean_teacher_unet.yaml \
+  --override_config_path configs/bench/ludb/1over16.yaml \
+  --checkpoint ../baseline/exps/resnet18/mean_teacher_unet/ludb/1over16/best-MeanIoU.pth \
+  --band 4 \
+  --out ../baseline/results/resnet18_mean_teacher_unet_ludb_1over16/teacher_boundary_diag.json
+```
+
+Proceed to boundary-aware MT only if interior accuracy clearly exceeds
+onset/offset-band accuracy on validation.
+
+## Phase 3 — Soft boundary-aware Mean Teacher
+
+Implemented as `algorithms/mean_teacher_boundary.py` +
+`configs/base/resnet18/mean_teacher_boundary_unet.yaml`.
+
+Loss: `L_sup + λ_region L_u_region + λ_boundary L_u_boundary`, with soft edge
+weights `0.5 Σ_c |p_t − p_{t−1}|` dilated by `boundary_band` (default 4).
+Interiors use hard conf gating (`conf_thresh: 0.80`); boundary bands use soft
+confidence (no hard drop). Globally low-confidence unlabeled clips are rejected
+via `sample_conf_thresh`.
+
+```bash
+bash scripts/run_ssl.sh --method mean_teacher_boundary --head unet --gpus 0
+bash scripts/run_ssl.sh --method mean_teacher_boundary --head unet --smoke
+```
+
+Default hyps (tune on labeled val before test claims): `boundary_band: 4`,
+`lambda_region: 1.0`, `lambda_boundary: 1.0`, `conf_thresh: 0.80`,
+`sample_conf_thresh: 0.50`.
+
 ## Hygiene (locked before test claims)
 
 1. Teacher-boundary diagnostic runs on the **labeled validation set** only.

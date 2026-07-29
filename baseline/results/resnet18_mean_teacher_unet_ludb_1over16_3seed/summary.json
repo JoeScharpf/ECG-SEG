@@ -1,0 +1,15 @@
+{
+  "method": "resnet18_mean_teacher_unet_ludb_1over16",
+  "seeds": {
+    "seed0": 0.8409,
+    "seed1": 0.8401,
+    "seed2": 0.8381
+  },
+  "test_mean_iou_mean": 0.8397,
+  "test_mean_iou_std": 0.0014,
+  "supervised_unet_3seed_mean": 0.8178,
+  "supervised_unet_3seed_std": 0.0024,
+  "ssl_lift_vs_supervised": 0.0219,
+  "decision_gate": "PASS",
+  "decision_note": "Stable ~+0.022 MeanIoU lift over supervised U-Net; proceed to Phase 2.5 teacher boundary diagnostic."
+}

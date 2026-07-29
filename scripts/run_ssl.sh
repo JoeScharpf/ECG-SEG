@@ -41,7 +41,8 @@ while [[ $# -gt 0 ]]; do
             echo "Usage: bash scripts/run_ssl.sh [options]"
             echo ""
             echo "Options:"
-            echo "  --method {mean_teacher|fixmatch}   SSL algorithm (default: mean_teacher)"
+            echo "  --method {mean_teacher|fixmatch|mean_teacher_boundary}"
+            echo "                                  SSL algorithm (default: mean_teacher)"
             echo "  --head {fcn|unet}                   Decode head (default: unet)"
             echo "  --gpus IDS                          GPU indices (default: 0)"
             echo "  --label-fraction N                  LUDB 1/N split (default: 16)"
@@ -51,6 +52,7 @@ while [[ $# -gt 0 ]]; do
             echo "Examples:"
             echo "  bash scripts/run_ssl.sh --method mean_teacher --head unet --gpus 0"
             echo "  bash scripts/run_ssl.sh --method fixmatch --head fcn --seed 1"
+            echo "  bash scripts/run_ssl.sh --method mean_teacher_boundary --head unet --gpus 0"
             echo "  bash scripts/run_ssl.sh --method mean_teacher --head unet --smoke"
             echo ""
             echo "Run inside tmux on gpu2 for full 100-epoch jobs."
@@ -64,9 +66,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$METHOD" in
-    mean_teacher|fixmatch) ;;
+    mean_teacher|fixmatch|mean_teacher_boundary) ;;
     *)
-        echo "Invalid --method: $METHOD (expected mean_teacher|fixmatch)"
+        echo "Invalid --method: $METHOD (expected mean_teacher|fixmatch|mean_teacher_boundary)"
         exit 1
         ;;
 esac
@@ -78,6 +80,11 @@ case "$HEAD" in
         exit 1
         ;;
 esac
+
+if [[ "$METHOD" == "mean_teacher_boundary" && "$HEAD" != "unet" ]]; then
+    echo "mean_teacher_boundary currently ships a U-Net config only (--head unet)"
+    exit 1
+fi
 
 if [[ "$HEAD" == "unet" ]]; then
     CONFIG_STEM="${METHOD}_unet"
