@@ -1,0 +1,14 @@
+{
+  "method": "resnet18_mean_teacher_boundary_unet_ludb_1over16",
+  "seeds": {
+    "seed0": 0.8449,
+    "seed1": 0.8454,
+    "seed2": 0.8458
+  },
+  "test_mean_iou_mean": 0.8454,
+  "test_mean_iou_std": 0.0005,
+  "plain_mt_unet_3seed_mean": 0.8397,
+  "plain_mt_unet_3seed_std": 0.0014,
+  "lift_vs_plain_mt": 0.0057,
+  "decision_note": "Stable small mIoU lift vs plain MT with consistent T-wave boundary MAE improvements; mild fragmentation tradeoff."
+}
