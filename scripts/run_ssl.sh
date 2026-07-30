@@ -45,14 +45,15 @@ while [[ $# -gt 0 ]]; do
             echo "                                  SSL algorithm (default: mean_teacher)"
             echo "  --head {fcn|unet}                   Decode head (default: unet)"
             echo "  --gpus IDS                          GPU indices (default: 0)"
-            echo "  --label-fraction N                  LUDB 1/N split (default: 16)"
-            echo "  --seed N                            RNG seed (default: 0)"
+            echo "  --label-fraction N                  LUDB 1/N split: 16|8|4|2 (default: 16)"
+            echo "  --seed N                            RNG seed 0|1|2 (default: 0)"
             echo "  --smoke                             Train 1 epoch only (debug)"
             echo ""
             echo "Examples:"
             echo "  bash scripts/run_ssl.sh --method mean_teacher --head unet --gpus 0"
             echo "  bash scripts/run_ssl.sh --method fixmatch --head fcn --seed 1"
             echo "  bash scripts/run_ssl.sh --method mean_teacher_boundary --head unet --gpus 0"
+            echo "  bash scripts/run_ssl.sh --method mean_teacher --head unet --label-fraction 8 --seed 0"
             echo "  bash scripts/run_ssl.sh --method mean_teacher --head unet --smoke"
             echo ""
             echo "Run inside tmux on gpu2 for full 100-epoch jobs."
@@ -92,6 +93,22 @@ else
     CONFIG_STEM="${METHOD}"
 fi
 
+case "$LABEL_FRACTION" in
+    16|8|4|2) ;;
+    *)
+        echo "Invalid --label-fraction: $LABEL_FRACTION (expected 16|8|4|2)"
+        exit 1
+        ;;
+esac
+
+case "$SEED" in
+    0|1|2) ;;
+    *)
+        echo "Invalid --seed: $SEED (expected 0|1|2)"
+        exit 1
+        ;;
+esac
+
 BASE_CONFIG="../configs/base/resnet18/${CONFIG_STEM}.yaml"
 OUTPUT_DIR="$REPO_ROOT/baseline/exps/resnet18/${CONFIG_STEM}"
 
@@ -102,22 +119,24 @@ if [[ "$SMOKE" == "1" ]]; then
     fi
     BENCH_CONFIG="../configs/bench/ludb/1over16_ssl_smoke.yaml"
     RUN_SUBDIR="ludb/1over16_smoke"
-elif [[ "$SEED" == "0" && "$LABEL_FRACTION" == "16" ]]; then
-    BENCH_CONFIG="../configs/bench/ludb/1over${LABEL_FRACTION}.yaml"
-    RUN_SUBDIR="ludb/1over${LABEL_FRACTION}"
-elif [[ "$LABEL_FRACTION" == "16" && ( "$SEED" == "1" || "$SEED" == "2" ) ]]; then
-    BENCH_CONFIG="../configs/bench/ludb/1over16_ssl_seed${SEED}.yaml"
-    RUN_SUBDIR="ludb/1over16_seed${SEED}"
+    RESULTS_DIR="baseline/results/resnet18_${CONFIG_STEM}_ludb_1over16_smoke"
+elif [[ "$LABEL_FRACTION" == "16" && "$SEED" == "0" ]]; then
+    # Legacy path: keep published seed-0 1/16 dirs stable
+    BENCH_CONFIG="../configs/bench/ludb/1over16.yaml"
+    RUN_SUBDIR="ludb/1over16"
+    RESULTS_DIR="baseline/results/resnet18_${CONFIG_STEM}_ludb_1over16"
 else
-    echo "Unsupported combo: label-fraction=${LABEL_FRACTION} seed=${SEED}"
-    echo "Supported: fraction 16 with seeds 0/1/2 (seed 0 uses 1over16.yaml)."
-    exit 1
+    # Seed-specific overlays for all other fraction/seed combos (incl. 1/16 seeds 1–2)
+    BENCH_CONFIG="../configs/bench/ludb/1over${LABEL_FRACTION}_ssl_seed${SEED}.yaml"
+    RUN_SUBDIR="ludb/1over${LABEL_FRACTION}_seed${SEED}"
+    RESULTS_DIR="baseline/results/resnet18_${CONFIG_STEM}_ludb_1over${LABEL_FRACTION}_seed${SEED}"
 fi
 
 RUN_DIR="baseline/exps/resnet18/${CONFIG_STEM}/${RUN_SUBDIR}"
-RESULTS_DIR="baseline/results/resnet18_${CONFIG_STEM}_ludb_1over${LABEL_FRACTION}"
-if [[ "$SEED" != "0" ]]; then
-    RESULTS_DIR="${RESULTS_DIR}_seed${SEED}"
+
+if [[ ! -f "semi-seg-ecg/configs/bench/ludb/$(basename "$BENCH_CONFIG")" ]]; then
+    echo "Missing bench config: semi-seg-ecg/configs/bench/ludb/$(basename "$BENCH_CONFIG")"
+    exit 1
 fi
 
 echo "=== SSL training (${METHOD} + ${HEAD}) ==="

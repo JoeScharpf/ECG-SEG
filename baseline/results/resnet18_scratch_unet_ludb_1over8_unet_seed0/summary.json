@@ -1,0 +1,10 @@
+{
+  "run_dir": "baseline/exps/resnet18/scratch_unet/ludb/1over8_unet_seed0",
+  "epochs_logged": 100,
+  "best_valid_loss": 0.15181313143071964,
+  "best_valid_loss_epoch": 42,
+  "best_valid_mean_iou": 0.8322209715843201,
+  "best_valid_mean_iou_epoch": 90,
+  "test_mean_iou": 0.8402,
+  "results_dir": "baseline/results/resnet18_scratch_unet_ludb_1over8_unet_seed0"
+}

@@ -6,6 +6,7 @@ cd "$REPO_ROOT"
 
 GPUS="0"
 SEEDS="0 1 2"
+LABEL_FRACTION="16"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -17,10 +18,19 @@ while [[ $# -gt 0 ]]; do
             SEEDS="$2"
             shift 2
             ;;
+        --label-fraction)
+            LABEL_FRACTION="$2"
+            shift 2
+            ;;
         -h|--help)
-            echo "Usage: bash scripts/run_unet_seeds.sh [--gpus 0] [--seeds \"0 1 2\"]"
-            echo "Multi-seed supervised ResNet-18 + U-Net on LUDB 1/16 for variance."
-            echo "Run inside tmux on gpu2."
+            echo "Usage: bash scripts/run_unet_seeds.sh [options]"
+            echo ""
+            echo "Options:"
+            echo "  --gpus IDS                 GPU indices (default: 0)"
+            echo "  --seeds \"0 1 2\"            Seeds to run (default: 0 1 2)"
+            echo "  --label-fraction N         LUDB 1/N split: 16|8|4|2 (default: 16)"
+            echo ""
+            echo "Multi-seed supervised ResNet-18 + U-Net on LUDB."
             exit 0
             ;;
         *)
@@ -30,13 +40,22 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+case "$LABEL_FRACTION" in
+    16|8|4|2) ;;
+    *)
+        echo "Invalid --label-fraction: $LABEL_FRACTION (expected 16|8|4|2)"
+        exit 1
+        ;;
+esac
+
 OUTPUT_DIR="$REPO_ROOT/baseline/exps/resnet18/scratch_unet"
 BASE_CONFIG="../configs/base/resnet18/scratch_unet.yaml"
 
-echo "=== U-Net multi-seed variance run (LUDB 1/16) ==="
+echo "=== U-Net multi-seed run (LUDB 1/${LABEL_FRACTION}) ==="
 echo "Repo root:  $REPO_ROOT"
 echo "GPU(s):     $GPUS"
 echo "Seeds:      $SEEDS"
+echo "Fraction:   1/${LABEL_FRACTION}"
 echo ""
 
 mkdir -p "$REPO_ROOT/baseline/exps"
@@ -46,9 +65,21 @@ if [[ -z "${CONDA_DEFAULT_ENV:-}" ]] || [[ "$CONDA_DEFAULT_ENV" != "semi_seg_ecg
     echo "Run: conda activate semi_seg_ecg"
 fi
 
+INDEX_DIR="semi-seg-ecg/index/ludb"
+LABELED_CSV="${INDEX_DIR}/LUDB_train_labeled_1over${LABEL_FRACTION}.csv"
+if [[ ! -f "$LABELED_CSV" ]]; then
+    echo "Missing labeled CSV: $LABELED_CSV"
+    exit 1
+fi
+
 for SEED in $SEEDS; do
-    BENCH_CONFIG="../configs/bench/ludb/1over16_unet_seed${SEED}.yaml"
-    RUN_SUBDIR="ludb/1over16_unet_seed${SEED}"
+    BENCH_CONFIG="../configs/bench/ludb/1over${LABEL_FRACTION}_unet_seed${SEED}.yaml"
+    RUN_SUBDIR="ludb/1over${LABEL_FRACTION}_unet_seed${SEED}"
+    if [[ ! -f "semi-seg-ecg/configs/bench/ludb/1over${LABEL_FRACTION}_unet_seed${SEED}.yaml" ]]; then
+        echo "Missing bench config for fraction=${LABEL_FRACTION} seed=${SEED}"
+        exit 1
+    fi
+
     echo ""
     echo "################  SEED ${SEED}  ################"
 
@@ -76,17 +107,18 @@ for SEED in $SEEDS; do
 done
 
 echo ""
-echo "=== Multi-seed summary ==="
-python - "$SEEDS" <<'PY'
+echo "=== Multi-seed summary (1/${LABEL_FRACTION}) ==="
+python - "$SEEDS" "$LABEL_FRACTION" <<'PY'
 import json
 import sys
 from pathlib import Path
 
 repo = Path.cwd()
 seeds = sys.argv[1].split()
+frac = sys.argv[2]
 vals = []
 for s in seeds:
-    p = repo / f"baseline/results/resnet18_scratch_unet_ludb_1over16_unet_seed{s}/summary.json"
+    p = repo / f"baseline/results/resnet18_scratch_unet_ludb_1over{frac}_unet_seed{s}/summary.json"
     if not p.exists():
         print(f"  seed {s}: MISSING {p}")
         continue
