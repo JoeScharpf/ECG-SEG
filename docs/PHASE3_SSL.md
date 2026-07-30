@@ -124,6 +124,28 @@ Default hyps (tune on labeled val before test claims): `boundary_band: 4`,
 `lambda_region: 1.0`, `lambda_boundary: 1.0`, `conf_thresh: 0.80`,
 `sample_conf_thresh: 0.50`.
 
+## Phase 4 — LUDB label-fraction sweep (seeded)
+
+Core U-Net table across **1/16, 1/8, 1/4, 1/2** × seeds **0/1/2**:
+supervised, Mean Teacher, and boundary-aware MT (27 new runs; 1/16 reused).
+
+```bash
+# single cell
+bash scripts/run_ssl.sh --method mean_teacher --head unet --label-fraction 8 --seed 0 --gpus 3
+bash scripts/run_unet_seeds.sh --label-fraction 8 --seeds "0" --gpus 3
+
+# full queue on gpu2 (skips existing summaries)
+bash scripts/run_ludb_fraction_sweep.sh --gpus 3,4,5,6,7
+
+# aggregate table
+python baseline/aggregate_ludb_fraction_table.py
+# -> baseline/results/ludb_fraction_benchmark/{summary_table.csv,summary_table.md,summary.json}
+```
+
+New fraction/seed cells use seed-specific `exp_name` paths
+(`ludb/1overN_seedK` or `ludb/1overN_unet_seedK`). Aggregator maps legacy 1/16
+naming (`_unet_seedK` vs bare / `_seedK`) without double-counting.
+
 ## Hygiene (locked before test claims)
 
 1. Teacher-boundary diagnostic runs on the **labeled validation set** only.

@@ -1,0 +1,140 @@
+{
+  "supervised": {
+    "1/16": {
+      "seeds": {
+        "0": 0.8204,
+        "1": 0.8156,
+        "2": 0.8175
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8178,
+      "test_mean_iou_std": 0.0024,
+      "complete": true
+    },
+    "1/8": {
+      "seeds": {
+        "0": 0.8402,
+        "1": 0.8412,
+        "2": 0.8393
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8402,
+      "test_mean_iou_std": 0.001,
+      "complete": true
+    },
+    "1/4": {
+      "seeds": {
+        "0": 0.8481,
+        "1": 0.8471,
+        "2": 0.8481
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8478,
+      "test_mean_iou_std": 0.0006,
+      "complete": true
+    },
+    "1/2": {
+      "seeds": {
+        "0": 0.8557,
+        "1": 0.8537,
+        "2": 0.8549
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8548,
+      "test_mean_iou_std": 0.001,
+      "complete": true
+    }
+  },
+  "mt": {
+    "1/16": {
+      "seeds": {
+        "0": 0.8409,
+        "1": 0.8401,
+        "2": 0.8381
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8397,
+      "test_mean_iou_std": 0.0014,
+      "complete": true
+    },
+    "1/8": {
+      "seeds": {
+        "0": 0.8515,
+        "1": 0.8523,
+        "2": 0.8533
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8524,
+      "test_mean_iou_std": 0.0009,
+      "complete": true
+    },
+    "1/4": {
+      "seeds": {
+        "0": 0.851,
+        "1": 0.8516,
+        "2": 0.8537
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8521,
+      "test_mean_iou_std": 0.0014,
+      "complete": true
+    },
+    "1/2": {
+      "seeds": {
+        "0": 0.8562,
+        "1": 0.8561,
+        "2": 0.8556
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.856,
+      "test_mean_iou_std": 0.0003,
+      "complete": true
+    }
+  },
+  "boundary_mt": {
+    "1/16": {
+      "seeds": {
+        "0": 0.8449,
+        "1": 0.8454,
+        "2": 0.8458
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8454,
+      "test_mean_iou_std": 0.0005,
+      "complete": true
+    },
+    "1/8": {
+      "seeds": {
+        "0": 0.8553,
+        "1": 0.8543,
+        "2": 0.8561
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8552,
+      "test_mean_iou_std": 0.0009,
+      "complete": true
+    },
+    "1/4": {
+      "seeds": {
+        "0": 0.8533,
+        "1": 0.8573,
+        "2": 0.8528
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8545,
+      "test_mean_iou_std": 0.0025,
+      "complete": true
+    },
+    "1/2": {
+      "seeds": {
+        "0": 0.8601,
+        "1": 0.8573,
+        "2": 0.8599
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8591,
+      "test_mean_iou_std": 0.0016,
+      "complete": true
+    }
+  }
+}

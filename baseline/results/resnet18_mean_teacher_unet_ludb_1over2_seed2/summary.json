@@ -1,0 +1,10 @@
+{
+  "run_dir": "baseline/exps/resnet18/mean_teacher_unet/ludb/1over2_seed2",
+  "epochs_logged": 100,
+  "best_valid_loss": 0.12375424585790716,
+  "best_valid_loss_epoch": 35,
+  "best_valid_mean_iou": 0.8458377718925476,
+  "best_valid_mean_iou_epoch": 78,
+  "test_mean_iou": 0.8556,
+  "results_dir": "baseline/results/resnet18_mean_teacher_unet_ludb_1over2_seed2"
+}
