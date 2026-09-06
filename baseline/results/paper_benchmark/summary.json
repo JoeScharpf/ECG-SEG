@@ -1,0 +1,199 @@
+{
+  "ludb": {
+    "1/16": {
+      "seeds": {
+        "0": 0.8449,
+        "1": 0.8454,
+        "2": 0.8458
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8454,
+      "test_mean_iou_std": 0.0005,
+      "complete": true
+    },
+    "1/8": {
+      "seeds": {
+        "0": 0.8553,
+        "1": 0.8543,
+        "2": 0.8561
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8552,
+      "test_mean_iou_std": 0.0009,
+      "complete": true
+    },
+    "1/4": {
+      "seeds": {
+        "0": 0.8533,
+        "1": 0.8573,
+        "2": 0.8528
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8545,
+      "test_mean_iou_std": 0.0025,
+      "complete": true
+    },
+    "1/2": {
+      "seeds": {
+        "0": 0.8601,
+        "1": 0.8573,
+        "2": 0.8599
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8591,
+      "test_mean_iou_std": 0.0016,
+      "complete": true
+    }
+  },
+  "qtdb": {
+    "1/16": {
+      "seeds": {
+        "0": 0.5886,
+        "1": 0.6459,
+        "2": 0.634
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.6228,
+      "test_mean_iou_std": 0.0302,
+      "complete": true
+    },
+    "1/8": {
+      "seeds": {
+        "0": 0.6716,
+        "1": 0.6796,
+        "2": 0.6805
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.6772,
+      "test_mean_iou_std": 0.0049,
+      "complete": true
+    },
+    "1/4": {
+      "seeds": {
+        "0": 0.7516,
+        "1": 0.7519,
+        "2": 0.7499
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.7511,
+      "test_mean_iou_std": 0.0011,
+      "complete": true
+    },
+    "1/2": {
+      "seeds": {
+        "0": 0.7727,
+        "1": 0.7619,
+        "2": 0.7703
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.7683,
+      "test_mean_iou_std": 0.0057,
+      "complete": true
+    }
+  },
+  "isp": {
+    "1/16": {
+      "seeds": {
+        "0": 0.7691,
+        "1": 0.7662,
+        "2": 0.7655
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.7669,
+      "test_mean_iou_std": 0.0019,
+      "complete": true
+    },
+    "1/8": {
+      "seeds": {
+        "0": 0.7807,
+        "1": 0.7794,
+        "2": 0.7769
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.779,
+      "test_mean_iou_std": 0.0019,
+      "complete": true
+    },
+    "1/4": {
+      "seeds": {
+        "0": 0.7924,
+        "1": 0.7958,
+        "2": 0.7916
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.7933,
+      "test_mean_iou_std": 0.0022,
+      "complete": true
+    },
+    "1/2": {
+      "seeds": {
+        "0": 0.7988,
+        "1": 0.7988,
+        "2": 0.7999
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.7992,
+      "test_mean_iou_std": 0.0006,
+      "complete": true
+    }
+  },
+  "zhejiang": {
+    "1/16": {
+      "seeds": {
+        "0": 0.8365,
+        "1": 0.8375,
+        "2": 0.8376
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8372,
+      "test_mean_iou_std": 0.0006,
+      "complete": true
+    },
+    "1/8": {
+      "seeds": {
+        "0": 0.8474,
+        "1": 0.8473,
+        "2": 0.8486
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8478,
+      "test_mean_iou_std": 0.0007,
+      "complete": true
+    },
+    "1/4": {
+      "seeds": {
+        "0": 0.8535,
+        "1": 0.8536,
+        "2": 0.8537
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8536,
+      "test_mean_iou_std": 0.0001,
+      "complete": true
+    },
+    "1/2": {
+      "seeds": {
+        "0": 0.8621,
+        "1": 0.8607,
+        "2": 0.8619
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8616,
+      "test_mean_iou_std": 0.0008,
+      "complete": true
+    }
+  },
+  "cross_domain": {
+    "merged": {
+      "seeds": {
+        "0": 0.8257,
+        "1": 0.8273,
+        "2": 0.8253
+      },
+      "n": 3,
+      "test_mean_iou_mean": 0.8261,
+      "test_mean_iou_std": 0.0011,
+      "complete": true
+    }
+  }
+}

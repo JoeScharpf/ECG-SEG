@@ -1,0 +1,10 @@
+{
+  "run_dir": "baseline/exps/resnet18/mean_teacher_boundary_unet/qtdb/1over16_seed1",
+  "epochs_logged": 100,
+  "best_valid_loss": 0.49607901315431335,
+  "best_valid_loss_epoch": 30,
+  "best_valid_mean_iou": 0.5999609231948853,
+  "best_valid_mean_iou_epoch": 52,
+  "test_mean_iou": 0.6459,
+  "results_dir": "baseline/results/resnet18_mean_teacher_boundary_unet_qtdb_1over16_seed1"
+}

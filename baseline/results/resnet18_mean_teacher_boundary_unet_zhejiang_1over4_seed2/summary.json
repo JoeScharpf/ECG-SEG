@@ -1,0 +1,10 @@
+{
+  "run_dir": "baseline/exps/resnet18/mean_teacher_boundary_unet/zhejiang/1over4_seed2",
+  "epochs_logged": 100,
+  "best_valid_loss": 0.07535956688781283,
+  "best_valid_loss_epoch": 47,
+  "best_valid_mean_iou": 0.8578077554702759,
+  "best_valid_mean_iou_epoch": 65,
+  "test_mean_iou": 0.8537,
+  "results_dir": "baseline/results/resnet18_mean_teacher_boundary_unet_zhejiang_1over4_seed2"
+}
