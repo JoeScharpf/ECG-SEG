@@ -1,0 +1,10 @@
+{
+  "run_dir": "baseline/exps/resnet18/mean_teacher_boundary_unet/isp/1over8_seed2",
+  "epochs_logged": 100,
+  "best_valid_loss": 0.32343770826012835,
+  "best_valid_loss_epoch": 13,
+  "best_valid_mean_iou": 0.7574564218521118,
+  "best_valid_mean_iou_epoch": 53,
+  "test_mean_iou": 0.7769,
+  "results_dir": "baseline/results/resnet18_mean_teacher_boundary_unet_isp_1over8_seed2"
+}

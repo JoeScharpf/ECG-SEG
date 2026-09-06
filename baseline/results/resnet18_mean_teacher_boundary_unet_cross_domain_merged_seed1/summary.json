@@ -1,0 +1,10 @@
+{
+  "run_dir": "baseline/exps/resnet18/mean_teacher_boundary_unet/cross_domain/merged_seed1",
+  "epochs_logged": 100,
+  "best_valid_loss": 0.1863174815987407,
+  "best_valid_loss_epoch": 1,
+  "best_valid_mean_iou": 0.8086457848548889,
+  "best_valid_mean_iou_epoch": 11,
+  "test_mean_iou": 0.8273,
+  "results_dir": "baseline/results/resnet18_mean_teacher_boundary_unet_cross_domain_merged_seed1"
+}

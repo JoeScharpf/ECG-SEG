@@ -1,0 +1,78 @@
+{
+  "n_recordings": 924,
+  "signal_length": 2500,
+  "fs_hz": 250.0,
+  "match_iou_threshold": 0.1,
+  "beat_window_samples": 250,
+  "pixel_iou": {
+    "background": 0.8246620526231262,
+    "P": 0.7885262653680345,
+    "QRS": 0.8818785091523258,
+    "T": 0.7764388714733542,
+    "mean": 0.8178764246542102
+  },
+  "detection": {
+    "n_gt_segments": 32304,
+    "n_pred_segments": 32462,
+    "n_matched_pairs": 31578,
+    "match_rate_vs_gt": 0.9775260029717682,
+    "extra_pred_fragments": 134,
+    "fragmentation_rate": 0.004127903394738464
+  },
+  "boundary_mae": {
+    "P": {
+      "onset": {
+        "n": 9387,
+        "mae_samples": 2.7043783956535634,
+        "mae_ms": 10.817513582614254
+      },
+      "offset": {
+        "n": 9387,
+        "mae_samples": 2.2995632257377223,
+        "mae_ms": 9.19825290295089
+      }
+    },
+    "QRS": {
+      "onset": {
+        "n": 11712,
+        "mae_samples": 1.4883025956284153,
+        "mae_ms": 5.953210382513661
+      },
+      "offset": {
+        "n": 11712,
+        "mae_samples": 1.9791666666666667,
+        "mae_ms": 7.916666666666667
+      }
+    },
+    "T": {
+      "onset": {
+        "n": 10479,
+        "mae_samples": 5.003721729172631,
+        "mae_ms": 20.014886916690525
+      },
+      "offset": {
+        "n": 10479,
+        "mae_samples": 4.38810955243821,
+        "mae_ms": 17.55243820975284
+      }
+    }
+  },
+  "intervals": {
+    "qrs_duration": {
+      "n": 11712,
+      "mae_samples": 2.6109118852459017,
+      "mae_ms": 10.443647540983607
+    },
+    "pr": {
+      "n": 9627,
+      "mae_samples": 3.0914095772307055,
+      "mae_ms": 12.365638308922822
+    },
+    "qt": {
+      "n": 10903,
+      "mae_samples": 4.768137209942218,
+      "mae_ms": 19.07254883976887
+    }
+  },
+  "run_dir": "/home/joe/ECG-SEG/baseline/exps/resnet18/mean_teacher_boundary_unet/isp/1over4_seed0"
+}
